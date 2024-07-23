@@ -1,41 +1,40 @@
-﻿//https://leetcode.com/problems/palindrome-number
-//Palimdrome Number
+﻿//https://leetcode.com/problems/two-sum/
+//Two Sum
 
-using System;
-
-Solution p = new Solution();
-
-Console.WriteLine(p.IsPalindrome(1234567899));
-
+Solution s = new Solution();
+int[] nums = { 2, 7, 11, 15 };
+int target = 9;
+foreach(int i in s.TwoSum(nums, target))
+{
+    Console.Write(i);
+    Console.Write(",");
+}
 
 public class Solution
 {
-    public bool IsPalindrome(int x)
+
+    public int[] TwoSum(int[] nums, int target)
     {
-        string verifyNumber;
 
-        if (x < 0)
-            return false;
+        Dictionary<int, int> map = new Dictionary<int, int>();
 
-        verifyNumber = x.ToString();
-        long newNumber = GerarNumeroContrário(verifyNumber);
 
-        if (newNumber == x)
-            return true;
-
-        else
-            return false;
-
-    }
-
-    public long GerarNumeroContrário(string number)
-    {
-        string newNumber = "";
-        for (int i = 0; i < number.Length; i++)
+        for (int i = 0; i <= nums.Length; i++)
         {
-            newNumber += number[number.Length - i - 1];
-        }
-        return Int64.Parse(newNumber);
+            // 
+            int x = target - nums[i];
+            if (map.ContainsKey(x))
+            {
+                return new int[] { map[x], i };
+            }
 
+            if (!map.ContainsKey(nums[i]))
+            {
+                map[nums[i]] = i;
+            }
+        }
+        return new int[0];
     }
+
+
 }
