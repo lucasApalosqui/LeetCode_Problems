@@ -1,29 +1,32 @@
-﻿public static class LogLine
+﻿static class QuestLogic
 {
-    public static string Message(string logLine)
+    public static bool CanFastAttack(bool knightIsAwake)
     {
-        var split = logLine.Split(":");
-        var message = split[1];
-        return message.Trim();
-
+       if(knightIsAwake)
+            return false;
+       return true;
     }
 
-    public static string LogLevel(string logLine)
+    public static bool CanSpy(bool knightIsAwake, bool archerIsAwake, bool prisonerIsAwake)
     {
-        var split = logLine.Split(":");
-        var log = split[0];
-        return log.Trim(['[', ']']).ToLower();
+        if(knightIsAwake || archerIsAwake || prisonerIsAwake)
+            return true;
+        return false;
     }
 
-    public static string Reformat(string logLine)
+    public static bool CanSignalPrisoner(bool archerIsAwake, bool prisonerIsAwake)
     {
-        var split = logLine.Split(":");
-        var message = split[1];
-        var log = split[0];
+        if(prisonerIsAwake && !archerIsAwake)
+            return true;
+        return false;
+    }
 
-        message = message.Trim();
-        return $"{message} ({log.Trim(['[', ']']).ToLower()})";
+    public static bool CanFreePrisoner(bool knightIsAwake, bool archerIsAwake, bool prisonerIsAwake, bool petDogIsPresent)
+    {
+        if (petDogIsPresent && !archerIsAwake)
+            return true;
+        else if (!petDogIsPresent && !archerIsAwake && !knightIsAwake && prisonerIsAwake)
+            return true;
+        return false;
     }
 }
-
-
