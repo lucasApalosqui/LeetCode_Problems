@@ -1,32 +1,26 @@
-﻿static class QuestLogic
+﻿public static class LogAnalysis
 {
-    public static bool CanFastAttack(bool knightIsAwake)
+    public static string SubstringAfter(this string str, string delimiter)
     {
-       if(knightIsAwake)
-            return false;
-       return true;
+        var idx = str.IndexOf(delimiter);
+        return idx != -1 ? str.Substring(idx + delimiter.Length) : "";
     }
 
-    public static bool CanSpy(bool knightIsAwake, bool archerIsAwake, bool prisonerIsAwake)
+    public static string SubstringBetween(this string str, string delimiter1, string delimiter2)
     {
-        if(knightIsAwake || archerIsAwake || prisonerIsAwake)
-            return true;
-        return false;
+        var idx = str.IndexOf(delimiter1);
+        var result = idx != -1 ? str.Substring(idx + delimiter1.Length) : "";
+        var split = result.Split(delimiter2);
+        return split[0];
     }
 
-    public static bool CanSignalPrisoner(bool archerIsAwake, bool prisonerIsAwake)
+    public static string Message(this string str)
     {
-        if(prisonerIsAwake && !archerIsAwake)
-            return true;
-        return false;
+        return str.SubstringAfter(": ");
     }
 
-    public static bool CanFreePrisoner(bool knightIsAwake, bool archerIsAwake, bool prisonerIsAwake, bool petDogIsPresent)
+    public static string LogLevel(this string str)
     {
-        if (petDogIsPresent && !archerIsAwake)
-            return true;
-        else if (!petDogIsPresent && !archerIsAwake && !knightIsAwake && prisonerIsAwake)
-            return true;
-        return false;
+        return str.SubstringBetween("[", "]");
     }
 }
