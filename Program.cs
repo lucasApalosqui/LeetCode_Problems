@@ -1,40 +1,57 @@
-﻿var car = RemoteControlCar.Buy();
-car.Drive();
-car.Drive();
-car.BatteryDisplay();
-
-class RemoteControlCar
+﻿
+class BirdCount
 {
-    private int _battery, _distance;
+    private int[] birdsPerDay;
+    private static readonly int[] _lastWeek = [0, 2, 5, 3, 7, 8, 4];
 
-    public RemoteControlCar()
+    public BirdCount(int[] birdsPerDay)
     {
-        _battery = 100;
-        _distance = 0;
+        this.birdsPerDay = birdsPerDay;
     }
 
-    public static RemoteControlCar Buy()
+    public static int[] LastWeek()
     {
-        return new RemoteControlCar();
+        return _lastWeek;
     }
 
-    public string DistanceDisplay()
+    public int Today()
     {
-        return $"Driven {_distance} meters";
+        return birdsPerDay[birdsPerDay.Length - 1];
     }
 
-    public string BatteryDisplay()
+    public void IncrementTodaysCount()
     {
-        if (_battery <= 0)
-            return $"Battery at {_battery}%";
-        return "Battery empty";
+        birdsPerDay[birdsPerDay.Length - 1]++;
     }
 
-    public void Drive()
+    public bool HasDayWithoutBirds()
     {
-        _battery -= 1;
+        foreach(var birds in birdsPerDay)
+        {
+            if(birds == 0)
+                return true;
+        }
+        return false;
+    }
 
-        if (_battery != 0)
-            _distance += 20;
+    public int CountForFirstDays(int numberOfDays)
+    {
+        int count = 0;
+        for(int i = 0; i < numberOfDays; i++)
+        {
+            count += birdsPerDay[i];
+        }
+        return count;
+    }
+
+    public int BusyDays()
+    {
+        int busyDays = 0;
+        foreach(var birds in birdsPerDay)
+        {
+            if(birds >= 5)
+                busyDays++;
+        }
+        return busyDays;
     }
 }
