@@ -1,30 +1,40 @@
-﻿using System.Security.Cryptography.X509Certificates;
+﻿var car = RemoteControlCar.Buy();
+car.Drive();
+car.Drive();
+car.BatteryDisplay();
 
-static class AssemblyLine
+class RemoteControlCar
 {
-    public static readonly int carsPerHour = 221;
+    private int _battery, _distance;
 
-    public static double SuccessRate(int speed)
+    public RemoteControlCar()
     {
-        if (speed == 0)
-            return 0;
-        else if (speed >= 1 && speed <= 4)
-            return 1;
-        else if (speed >= 5 && speed <= 8)
-            return 0.90;
-        else if (speed == 9)
-            return 0.80;
-        else
-            return 0.77;
+        _battery = 100;
+        _distance = 0;
     }
 
-    public static double ProductionRatePerHour(int speed)
+    public static RemoteControlCar Buy()
     {
-        return (carsPerHour * speed) * SuccessRate(speed);
+        return new RemoteControlCar();
     }
 
-    public static int WorkingItemsPerMinute(int speed)
+    public string DistanceDisplay()
     {
-        return (int)(ProductionRatePerHour(speed) / 60);
+        return $"Driven {_distance} meters";
+    }
+
+    public string BatteryDisplay()
+    {
+        if (_battery <= 0)
+            return $"Battery at {_battery}%";
+        return "Battery empty";
+    }
+
+    public void Drive()
+    {
+        _battery -= 1;
+
+        if (_battery != 0)
+            _distance += 20;
     }
 }
