@@ -1,26 +1,30 @@
-﻿public static class LogAnalysis
+﻿using System.Security.Cryptography.X509Certificates;
+
+static class AssemblyLine
 {
-    public static string SubstringAfter(this string str, string delimiter)
+    public static readonly int carsPerHour = 221;
+
+    public static double SuccessRate(int speed)
     {
-        var idx = str.IndexOf(delimiter);
-        return idx != -1 ? str.Substring(idx + delimiter.Length) : "";
+        if (speed == 0)
+            return 0;
+        else if (speed >= 1 && speed <= 4)
+            return 1;
+        else if (speed >= 5 && speed <= 8)
+            return 0.90;
+        else if (speed == 9)
+            return 0.80;
+        else
+            return 0.77;
     }
 
-    public static string SubstringBetween(this string str, string delimiter1, string delimiter2)
+    public static double ProductionRatePerHour(int speed)
     {
-        var idx = str.IndexOf(delimiter1);
-        var result = idx != -1 ? str.Substring(idx + delimiter1.Length) : "";
-        var split = result.Split(delimiter2);
-        return split[0];
+        return (carsPerHour * speed) * SuccessRate(speed);
     }
 
-    public static string Message(this string str)
+    public static int WorkingItemsPerMinute(int speed)
     {
-        return str.SubstringAfter(": ");
-    }
-
-    public static string LogLevel(this string str)
-    {
-        return str.SubstringBetween("[", "]");
+        return (int)(ProductionRatePerHour(speed) / 60);
     }
 }
