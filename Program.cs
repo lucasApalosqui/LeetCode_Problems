@@ -1,49 +1,57 @@
-﻿//https://leetcode.com/problems/roman-to-integer
-//Roman To Integer
-/*
-    Neste desafio aprendi melhor como manipular dicionários e laços de repetição;
-    Além de manipulação de strings retirando diretamente os caracteres da string; 
-*/
-
-
-// Teste de execução da solução
-Solution sol = new Solution();
-Console.WriteLine(sol.RomanToInt("III"));
-
-public class Solution
+﻿
+class BirdCount
 {
-    // Criação do dicionário com a chave sendo o char do numero romano e o valor sendo o numero que ele equivale
-    Dictionary<char, int> numbers = new Dictionary<char, int>()
-        {
-            {'I', 1 },
-            {'V', 5},
-            {'X', 10},
-            {'L', 50},
-            {'C', 100},
-            {'D', 500},
-            {'M', 1000}
-        };
+    private int[] birdsPerDay;
+    private static readonly int[] _lastWeek = [0, 2, 5, 3, 7, 8, 4];
 
-    // criação do método que transforma um romano em um inteiro
-    public int RomanToInt(string s)
+    public BirdCount(int[] birdsPerDay)
     {
+        this.birdsPerDay = birdsPerDay;
+    }
 
-        var result = 0;
-        // laço de repetição que irá correr por cada caractere que existe na string fornecida
-        for (int i = 0; i < s.Length; i++)
+    public static int[] LastWeek()
+    {
+        return _lastWeek;
+    }
+
+    public int Today()
+    {
+        return birdsPerDay[birdsPerDay.Length - 1];
+    }
+
+    public void IncrementTodaysCount()
+    {
+        birdsPerDay[birdsPerDay.Length - 1]++;
+    }
+
+    public bool HasDayWithoutBirds()
+    {
+        foreach(var birds in birdsPerDay)
         {
-            // lógica que verifica se o numero romano atual é menor do que o proximo numero romano, para verificar se são um numero só;
-            if (i < s.Length - 1 && numbers[s[i]] < numbers[s[i + 1]])
-            {
-                // Adiciona ao resultado o valor do proximo numero e subtrai pelo numero atual da sequencia, gerando assim o numero real que representa o romano
-                result += numbers[s[i + 1]] - numbers[s[i]];
-                i++;
-            }
-            else
-                // se o numero nao se enquadra na lógica ele é somado ao resultado final
-                result += numbers[s[i]];
+            if(birds == 0)
+                return true;
         }
+        return false;
+    }
 
-        return result;
+    public int CountForFirstDays(int numberOfDays)
+    {
+        int count = 0;
+        for(int i = 0; i < numberOfDays; i++)
+        {
+            count += birdsPerDay[i];
+        }
+        return count;
+    }
+
+    public int BusyDays()
+    {
+        int busyDays = 0;
+        foreach(var birds in birdsPerDay)
+        {
+            if(birds >= 5)
+                busyDays++;
+        }
+        return busyDays;
     }
 }
