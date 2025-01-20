@@ -1,57 +1,43 @@
-﻿
-class BirdCount
+﻿using System;
+using System.Globalization;
+
+Console.WriteLine(Appointment.Description(new DateTime(2019, 07, 25, 13, 45, 0)));
+var etste = Appointment.Description(new DateTime(2019, 07, 25, 13, 45, 0)).Replace('\u202F', ' ');
+Console.WriteLine(etste);
+
+
+static class Appointment
 {
-    private int[] birdsPerDay;
-    private static readonly int[] _lastWeek = [0, 2, 5, 3, 7, 8, 4];
-
-    public BirdCount(int[] birdsPerDay)
+    public static DateTime Schedule(string appointmentDateDescription)
     {
-        this.birdsPerDay = birdsPerDay;
+        if(appointmentDateDescription.Contains('/'))
+            if (appointmentDateDescription.Length != 19)
+                return DateTime.ParseExact(appointmentDateDescription, "M/d/yyyy HH:mm:ss", null);
+        return DateTime.Parse(appointmentDateDescription);
     }
 
-    public static int[] LastWeek()
+    public static bool HasPassed(DateTime appointmentDate)
     {
-        return _lastWeek;
+        if(appointmentDate <  DateTime.Now)
+            return true;
+        return false;
+
     }
 
-    public int Today()
+    public static bool IsAfternoonAppointment(DateTime appointmentDate)
     {
-        return birdsPerDay[birdsPerDay.Length - 1];
-    }
-
-    public void IncrementTodaysCount()
-    {
-        birdsPerDay[birdsPerDay.Length - 1]++;
-    }
-
-    public bool HasDayWithoutBirds()
-    {
-        foreach(var birds in birdsPerDay)
-        {
-            if(birds == 0)
-                return true;
-        }
+        if(appointmentDate.Hour >= 12 && appointmentDate.Hour < 18)
+            return true;
         return false;
     }
 
-    public int CountForFirstDays(int numberOfDays)
+    public static string Description(DateTime appointmentDate)
     {
-        int count = 0;
-        for(int i = 0; i < numberOfDays; i++)
-        {
-            count += birdsPerDay[i];
-        }
-        return count;
+        return $"You have an appointment on {appointmentDate.ToString("M/d/yyyy hh:mm:ss tt")}PM.";
     }
 
-    public int BusyDays()
+    public static DateTime AnniversaryDate()
     {
-        int busyDays = 0;
-        foreach(var birds in birdsPerDay)
-        {
-            if(birds >= 5)
-                busyDays++;
-        }
-        return busyDays;
+        return new DateTime(DateTime.Now.Year, 9, 15, 0, 0, 0);
     }
 }
