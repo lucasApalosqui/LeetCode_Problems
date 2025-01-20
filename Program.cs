@@ -1,43 +1,21 @@
 ﻿using System;
-using System.Globalization;
-
-Console.WriteLine(Appointment.Description(new DateTime(2019, 07, 25, 13, 45, 0)));
-var etste = Appointment.Description(new DateTime(2019, 07, 25, 13, 45, 0)).Replace('\u202F', ' ');
-Console.WriteLine(etste);
 
 
-static class Appointment
+Console.WriteLine(Badge.Print(null, "Amare Osei", null));
+static class Badge
 {
-    public static DateTime Schedule(string appointmentDateDescription)
+    public static string Print(int? id, string name, string? department)
     {
-        if(appointmentDateDescription.Contains('/'))
-            if (appointmentDateDescription.Length != 19)
-                return DateTime.ParseExact(appointmentDateDescription, "M/d/yyyy HH:mm:ss", null);
-        return DateTime.Parse(appointmentDateDescription);
-    }
+        if(id != null && department != null)
+            return $"[{id}] - {name} - {department.ToUpper()}";
 
-    public static bool HasPassed(DateTime appointmentDate)
-    {
-        if(appointmentDate <  DateTime.Now)
-            return true;
-        return false;
+        if (id == null && department != null)
+            return $"{name} - {department.ToUpper()}";
 
-    }
+        if (department == null)
+            department = "OWNER";
 
-    public static bool IsAfternoonAppointment(DateTime appointmentDate)
-    {
-        if(appointmentDate.Hour >= 12 && appointmentDate.Hour < 18)
-            return true;
-        return false;
-    }
+        return (id == null) ? $"{name} - {department.ToUpper()}" : $"[{id}] - {name} - {department.ToUpper()}";
 
-    public static string Description(DateTime appointmentDate)
-    {
-        return $"You have an appointment on {appointmentDate.ToString("M/d/yyyy hh:mm:ss tt")}PM.";
-    }
-
-    public static DateTime AnniversaryDate()
-    {
-        return new DateTime(DateTime.Now.Year, 9, 15, 0, 0, 0);
     }
 }
