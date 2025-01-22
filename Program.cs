@@ -1,30 +1,35 @@
 ﻿using System;
-using System.Text;
 
-
-
-public static class TelemetryBuffer
+static class SavingsAccount
 {
-    public static byte[] ToBuffer(long reading)
+    public static float InterestRate(decimal balance) => balance switch 
     {
-        var bytes = reading switch
-        {
-            < Int32.MinValue => BitConverter.GetBytes((long)reading).Prepend((byte)(256 - 8)),
-            < Int16.MinValue => BitConverter.GetBytes((int)reading).Prepend((byte)(256 - 4)),
-            < UInt16.MinValue => BitConverter.GetBytes((short)reading).Prepend((byte)(256 - 2)),
-            <= UInt16.MaxValue => BitConverter.GetBytes((ushort)reading).Prepend((byte)2),
-            <= Int32.MaxValue => BitConverter.GetBytes((int)reading).Prepend((byte)(256 - 4)),
-            <= UInt32.MaxValue => BitConverter.GetBytes((uint)reading).Prepend((byte)4),
-            _ => BitConverter.GetBytes((long)reading).Prepend((byte)(256 - 8)),
-        };
-        return bytes.Concat(new byte[9 - bytes.Count()]).ToArray();
+        < 0 => (float)3.213,
+        < 1000 => (float)0.5,
+        >= 1000 and < 5000 => (float)1.621,
+        >= 5000 => (float)2.475
+    };
+
+    public static decimal Interest(decimal balance)
+    {
+        return balance * ((decimal)InterestRate(balance)) / 100;
     }
 
-    public static long FromBuffer(byte[] buffer) => buffer[0] switch
+    public static decimal AnnualBalanceUpdate(decimal balance)
     {
-        256 - 8 or 4 or 2 => BitConverter.ToInt64(buffer, 1),
-        256 - 4 => BitConverter.ToInt32(buffer, 1),
-        256 - 2 => BitConverter.ToInt16(buffer, 1),
-        _ => 0,
-    };
+        return balance + Interest(balance);
+    }
+
+    public static int YearsBeforeDesiredBalance(decimal balance, decimal targetBalance)
+    {
+        int quant = 0;
+        while (balance < targetBalance)
+        {
+            quant++;
+            balance = AnnualBalanceUpdate(balance);
+        }
+
+        return quant;
+
+    }
 }
