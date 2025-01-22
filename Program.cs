@@ -1,35 +1,66 @@
 ﻿using System;
 
-static class SavingsAccount
+class RemoteControlCar
 {
-    public static float InterestRate(decimal balance) => balance switch 
-    {
-        < 0 => (float)3.213,
-        < 1000 => (float)0.5,
-        >= 1000 and < 5000 => (float)1.621,
-        >= 5000 => (float)2.475
-    };
+    private int _speed, _batteryDrain;
+    private int _battery = 100;
+    private int _meters = 0;
 
-    public static decimal Interest(decimal balance)
+    public RemoteControlCar(int speed, int batteryDrain)
     {
-        return balance * ((decimal)InterestRate(balance)) / 100;
+        _speed = speed;
+        _batteryDrain = batteryDrain;
     }
 
-    public static decimal AnnualBalanceUpdate(decimal balance)
+
+    public bool BatteryDrained()
     {
-        return balance + Interest(balance);
+        return (_battery <= 0 || _battery - _batteryDrain < 0) ? true : false;
     }
 
-    public static int YearsBeforeDesiredBalance(decimal balance, decimal targetBalance)
+    public int DistanceDriven()
     {
-        int quant = 0;
-        while (balance < targetBalance)
+        return _meters;
+    }
+
+    public int MaxDistance()
+    {
+        var battery = 100;
+        var meters = 0;
+        while (!(battery - _batteryDrain < 0))
         {
-            quant++;
-            balance = AnnualBalanceUpdate(balance);
+            meters += _speed;
+            battery -= _batteryDrain;
         }
 
-        return quant;
+        return meters;
+    }
 
+    public void Drive()
+    {
+        if (!(_battery - _batteryDrain < 0))
+        {
+            _meters += _speed;
+            _battery -= _batteryDrain;
+        }
+    }
+
+    public static RemoteControlCar Nitro()
+    {
+        return new RemoteControlCar(50, 4);
+    }
+}
+
+class RaceTrack
+{
+    private int _distance;
+    public RaceTrack(int distance)
+    {
+        _distance = distance;
+    }
+
+    public bool TryFinishTrack(RemoteControlCar car)
+    {
+        return (car.MaxDistance() >= _distance) ? true : false;
     }
 }
