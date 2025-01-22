@@ -1,66 +1,58 @@
 ﻿using System;
 
-class RemoteControlCar
+abstract class Character
 {
-    private int _speed, _batteryDrain;
-    private int _battery = 100;
-    private int _meters = 0;
-
-    public RemoteControlCar(int speed, int batteryDrain)
+    private string _characterType;
+    protected Character(string characterType)
     {
-        _speed = speed;
-        _batteryDrain = batteryDrain;
+        _characterType = characterType;
     }
 
+    public abstract int DamagePoints(Character target);
 
-    public bool BatteryDrained()
+    public virtual bool Vulnerable()
     {
-        return (_battery <= 0 || _battery - _batteryDrain < 0) ? true : false;
+        return false;
     }
 
-    public int DistanceDriven()
+    public override string ToString()
     {
-        return _meters;
-    }
-
-    public int MaxDistance()
-    {
-        var battery = 100;
-        var meters = 0;
-        while (!(battery - _batteryDrain < 0))
-        {
-            meters += _speed;
-            battery -= _batteryDrain;
-        }
-
-        return meters;
-    }
-
-    public void Drive()
-    {
-        if (!(_battery - _batteryDrain < 0))
-        {
-            _meters += _speed;
-            _battery -= _batteryDrain;
-        }
-    }
-
-    public static RemoteControlCar Nitro()
-    {
-        return new RemoteControlCar(50, 4);
+        return $"Character is a {_characterType}";
     }
 }
 
-class RaceTrack
+class Warrior : Character
 {
-    private int _distance;
-    public RaceTrack(int distance)
+    public Warrior() : base("Warrior")
     {
-        _distance = distance;
     }
 
-    public bool TryFinishTrack(RemoteControlCar car)
+    public override int DamagePoints(Character target)
     {
-        return (car.MaxDistance() >= _distance) ? true : false;
+        return (target.Vulnerable() == true) ? 10 : 6;
+    }
+}
+
+class Wizard : Character
+{
+    private bool _prepareSpeel;
+    public Wizard() : base("Wizard")
+    {
+        _prepareSpeel = false;
+    }
+
+    public override int DamagePoints(Character target)
+    {
+        return (_prepareSpeel == true) ? 12 : 3;
+    }
+
+    public override bool Vulnerable()
+    {
+        return (_prepareSpeel == false) ? true : false;
+    }
+
+    public void PrepareSpell()
+    {
+        _prepareSpeel = true;
     }
 }
