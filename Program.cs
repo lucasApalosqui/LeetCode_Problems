@@ -1,58 +1,75 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
-abstract class Character
+public static class DialingCodes
 {
-    private string _characterType;
-    protected Character(string characterType)
+
+    public static Dictionary<int, string> GetEmptyDictionary()
     {
-        _characterType = characterType;
+        return new Dictionary<int, string>();
     }
 
-    public abstract int DamagePoints(Character target);
-
-    public virtual bool Vulnerable()
+    public static Dictionary<int, string> GetExistingDictionary()
     {
-        return false;
+        return new Dictionary<int, string>
+    {
+        { 1, "United States of America" },
+        { 55, "Brazil" },
+        { 91, "India" }
+    }; ;
     }
 
-    public override string ToString()
+    public static Dictionary<int, string> AddCountryToEmptyDictionary(int countryCode, string countryName)
     {
-        return $"Character is a {_characterType}";
-    }
-}
-
-class Warrior : Character
-{
-    public Warrior() : base("Warrior")
-    {
+        return new Dictionary<int, string> { {countryCode, countryName } };
     }
 
-    public override int DamagePoints(Character target)
+    public static Dictionary<int, string> AddCountryToExistingDictionary(
+        Dictionary<int, string> existingDictionary, int countryCode, string countryName)
     {
-        return (target.Vulnerable() == true) ? 10 : 6;
-    }
-}
-
-class Wizard : Character
-{
-    private bool _prepareSpeel;
-    public Wizard() : base("Wizard")
-    {
-        _prepareSpeel = false;
+        existingDictionary.Add(countryCode, countryName);
+        return existingDictionary;
     }
 
-    public override int DamagePoints(Character target)
+    public static string GetCountryNameFromDictionary(
+        Dictionary<int, string> existingDictionary, int countryCode)
     {
-        return (_prepareSpeel == true) ? 12 : 3;
+        return (existingDictionary.ContainsKey(countryCode) == true) ? existingDictionary[countryCode] : string.Empty;
     }
 
-    public override bool Vulnerable()
+    public static bool CheckCodeExists(Dictionary<int, string> existingDictionary, int countryCode)
     {
-        return (_prepareSpeel == false) ? true : false;
+        return existingDictionary.ContainsKey(countryCode);
     }
 
-    public void PrepareSpell()
+    public static Dictionary<int, string> UpdateDictionary(
+        Dictionary<int, string> existingDictionary, int countryCode, string countryName)
     {
-        _prepareSpeel = true;
+        if (existingDictionary.ContainsKey(countryCode))
+            existingDictionary[countryCode] = countryName;
+
+        return existingDictionary;
+            
+    }
+
+    public static Dictionary<int, string> RemoveCountryFromDictionary(
+        Dictionary<int, string> existingDictionary, int countryCode)
+    {
+        if (existingDictionary.ContainsKey(countryCode))
+            existingDictionary.Remove(countryCode);
+
+        return existingDictionary;
+    }
+
+    public static string FindLongestCountryName(Dictionary<int, string> existingDictionary)
+    {
+        string longest = "";
+        foreach(var itens in existingDictionary)
+        {
+            if(itens.Value.Length > longest.Length)
+                longest = itens.Value;
+        }
+        return longest;
     }
 }
