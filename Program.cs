@@ -1,75 +1,30 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Text;
 
-public static class Languages
+
+
+public static class TelemetryBuffer
 {
-    private static List<string> _languages = new List<string>() { "C#", "Clojure", "Elm" };
-
-    public static List<string> NewList()
+    public static byte[] ToBuffer(long reading)
     {
-        return new List<string>();
-    }
-
-    public static List<string> GetExistingLanguages()
-    {
-        return _languages;
-    }
-
-    public static List<string> AddLanguage(List<string> languages, string language)
-    {
-        if (language != null) languages.Add(language);
-        return languages;
-    }
-
-    public static int CountLanguages(List<string> languages)
-    {
-        return languages.Count;
-    }
-
-    public static bool HasLanguage(List<string> languages, string language)
-    {
-        return (languages.Contains(language) ? true : false);
-    }
-
-    public static List<string> ReverseList(List<string> languages)
-    {
-        languages.Reverse();
-        return languages;
-    }
-
-    public static bool IsExciting(List<string> languages)
-    {
-        if(languages.Count == 0 || !languages.Contains("C#"))
-            return false;
-
-        if (languages[0] == "C#")
-            return true;
-        
-        return (languages[1] == "C#" && languages.Count >= 2 && languages.Count <= 3) ? true : false;
-    }
-
-    public static List<string> RemoveLanguage(List<string> languages, string language)
-    {
-        if(!languages.Contains(language))
-            return languages;
-
-        languages.Remove(language);
-        return languages;
-    }
-
-    public static bool IsUnique(List<string> languages)
-    {
-        foreach (string language in languages)
+        var bytes = reading switch
         {
-            var languagecont = 0;
-            for (int i = 0; i < languages.Count; i++)
-            {
-                if (languages[i] == language) languagecont++;
-
-
-            }
-            if (languagecont >= 2) return false;
-        }
-        return true;
+            < Int32.MinValue => BitConverter.GetBytes((long)reading).Prepend((byte)(256 - 8)),
+            < Int16.MinValue => BitConverter.GetBytes((int)reading).Prepend((byte)(256 - 4)),
+            < UInt16.MinValue => BitConverter.GetBytes((short)reading).Prepend((byte)(256 - 2)),
+            <= UInt16.MaxValue => BitConverter.GetBytes((ushort)reading).Prepend((byte)2),
+            <= Int32.MaxValue => BitConverter.GetBytes((int)reading).Prepend((byte)(256 - 4)),
+            <= UInt32.MaxValue => BitConverter.GetBytes((uint)reading).Prepend((byte)4),
+            _ => BitConverter.GetBytes((long)reading).Prepend((byte)(256 - 8)),
+        };
+        return bytes.Concat(new byte[9 - bytes.Count()]).ToArray();
     }
+
+    public static long FromBuffer(byte[] buffer) => buffer[0] switch
+    {
+        256 - 8 or 4 or 2 => BitConverter.ToInt64(buffer, 1),
+        256 - 4 => BitConverter.ToInt32(buffer, 1),
+        256 - 2 => BitConverter.ToInt16(buffer, 1),
+        _ => 0,
+    };
 }
