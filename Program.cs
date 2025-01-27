@@ -1,28 +1,55 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
-public static class PlayAnalyzer
+
+
+public enum LogLevel
 {
-    public static string AnalyzeOnField(int shirtNum) => shirtNum switch
-    {
-        1 => "goalie",
-        2 => "left back",
-        3 or 4 => "center back",
-        5 => "right back",
-        6 or 7 or 8 => "midfielder",
-        9 => "left wing",
-        10 => "striker",
-        11 => "right wing",
-        _ => "UNKNOWN"
-    };
-
-    public static string AnalyzeOffField(object report) => report switch
-    {
-        int sup => $"There are {sup} supporters at the match.",
-        string announ => announ,
-        Injury injury => $"Oh no! {injury.GetDescription()} Medics are on the field.",
-        Incident incident => incident.GetDescription(),
-        Manager manager => (manager.Club is null) ? manager.Name : $"{manager.Name} ({manager.Club})",
-        _ => ""
-    };
+    Trace = 1,
+    Debug = 2,
+    Info = 4,
+    Warning = 5,
+    Error = 6,
+    Fatal = 42,
+    Unknown = 0
 }
+
+public static class DicLog
+{
+    public static Dictionary<string, LogLevel> GenDic() => new Dictionary<string, LogLevel>()
+        {
+            { "TRC", LogLevel.Trace },
+            { "DBG", LogLevel.Debug},
+            { "INF", LogLevel.Info},
+            { "WRN", LogLevel.Warning},
+            { "ERR", LogLevel.Error },
+            { "FTL",LogLevel.Fatal }
+        };
+}
+
+public static class LogLine
+{
+    public static LogLevel ParseLogLevel(string logLine)
+    {
+        var lvl = logLine.Split('[', ']')[1];
+        var log = DicLog.GenDic();
+        var result = new LogLevel();
+        try
+        {
+            result = log[lvl];
+        }
+        catch
+        {
+            result = LogLevel.Unknown;
+        }
+
+        return result;
+    }
+
+    public static string OutputForShortLog(LogLevel logLevel, string message)
+    {
+        return $"{(int)logLevel}:{message}";
+    }
+}
+
+
