@@ -1,43 +1,16 @@
 ﻿using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-public enum AccountType
+public static class SimpleCalculator
 {
-    Guest,
-    User,
-    Moderator
-}
-
-[Flags]
-public enum Permission : byte
-{
-    Read = 1 << 0,
-    Write = 1 << 1,
-    Delete = 1 << 2,
-    All = Write | Delete | Read,
-    None = 0
-}
-
-
-static class Permissions
-{
-    public static Permission Default(AccountType accountType) => accountType switch
+    public static string Calculate(int operand1, int operand2, string operation) => operation switch
     {
-        AccountType.Guest => Permission.Read,
-        AccountType.User => Permission.Write | Permission.Read,
-        AccountType.Moderator => Permission.All,
-        _ => Permission.None
+        "+" => $"{operand1} + {operand2} = {(operand1 + operand2).ToString()}",
+        "*" => $"{operand1} * {operand2} = {(operand1 * operand2).ToString()}",
+        "/" => (operand2 != 0) ? $"{ operand1 } / { operand2 } = { (operand1 / operand2).ToString() }" : "Division by zero is not allowed.",
+        "" => throw new ArgumentException(),
+        null => throw new ArgumentNullException(),
+        _ => throw new ArgumentOutOfRangeException()    
     };
-    public static Permission Grant(Permission current, Permission grant)
-    {
-        return current | grant;
-    }
-    public static Permission Revoke(Permission current, Permission revoke)
-    {
-        return current & ~revoke;
-    }
-
-    public static bool Check(Permission current, Permission check)
-    {
-        return current.HasFlag(check);
-    }
 }
+
