@@ -1,35 +1,26 @@
 ﻿using System;
+using System.Text;
 
-public class SecurityPassMaker
+public static class Identifier
 {
-    public string GetDisplayName(TeamSupport support) => support switch
+    private static bool IsGreekLowercase(char c) => (c >= 'α' && c <= 'ω'); //Verifica se o char é uma letra grega minuscula
+    public static string Clean(string identifier)
     {
-        not Staff => "Too Important for a Security Pass",
-        Security => (support is SecurityIntern or SecurityJunior or PoliceLiaison) ? support.Title : "Security Team Member Priority Personnel",
-        _ => support.Title
-    };
+        StringBuilder sb = new StringBuilder();
+        var isAfterDash = false; //verifica se o char aparece após um '-'
+        foreach (var c in identifier)
+        {
+            sb.Append(c switch
+            {
+                _ when IsGreekLowercase(c) => default, //se for uma letra grega minuscula, não adiciona no stringBuilder
+                _ when isAfterDash => char.ToUpperInvariant(c), //Converte o seguinte caractere para maiusculo
+                _ when char.IsWhiteSpace(c) => '_', //transforma o char em '_' caso seja um espaço em branco
+                _ when char.IsControl(c) => "CTRL", // Se for um char de comando substitui por CTRL
+                _ when char.IsLetter(c) => c, //Adiciona o char se o mesmo for uma letra
+                _ => default,
+            });
+            isAfterDash = c.Equals('-'); // seta a variavel como true se o char for '-'
+        }
+        return sb.ToString();
+    }
 }
-
-/**** Please do not alter the code below ****/
-
-public interface TeamSupport { string Title { get; } }
-
-public abstract class Staff : TeamSupport { public abstract string Title { get; } }
-
-public class Manager : TeamSupport { public string Title { get; } = "The Manager"; }
-
-public class Chairman : TeamSupport { public string Title { get; } = "The Chairman"; }
-
-public class Physio : Staff { public override string Title { get; } = "The Physio"; }
-
-public class OffensiveCoach : Staff { public override string Title { get; } = "Offensive Coach"; }
-
-public class GoalKeepingCoach : Staff { public override string Title { get; } = "Goal Keeping Coach"; }
-
-public class Security : Staff { public override string Title { get; } = "Security Team Member"; }
-
-public class SecurityJunior : Security { public override string Title { get; } = "Security Junior"; }
-
-public class SecurityIntern : Security { public override string Title { get; } = "Security Intern"; }
-
-public class PoliceLiaison : Security { public override string Title { get; } = "Police Liaison Officer"; }
