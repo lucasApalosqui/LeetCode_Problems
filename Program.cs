@@ -1,33 +1,38 @@
 ﻿using System;
+using System.Globalization;
 
-public static class CentralBank
+
+class WeighingMachine
 {
-    public static string DisplayDenomination(long @base, long multiplier)
+    private double _weight;
+    private double _tareAdjus = 5.0;
+
+    public WeighingMachine(int precision)
     {
-        try
+        Precision = precision;
+    }
+
+    public int Precision { get; private set; }
+    public double Weight 
+    {
+        get { return _weight; }
+        set 
         {
-            return $"{checked(@base * multiplier)}";
-        }
-        catch  
-        {
-            return ("*** Too Big ***");
+            if (value >= 0)
+               _weight = value;
+            else
+                throw new ArgumentOutOfRangeException();
         }
     }
 
-    public static string DisplayGDP(float @base, float multiplier)
+    public string DisplayWeight 
     {
-       return float.IsFinite(@base * multiplier) ? $"{@base * multiplier}" : "*** Too Big ***";
+        get
+        {
+            var format = new NumberFormatInfo() { NumberDecimalDigits = Precision };
+            return $"{(_weight - _tareAdjus).ToString("f", format)} kg";
+        }
     }
 
-    public static string DisplayChiefEconomistSalary(decimal salaryBase, decimal multiplier)
-    {
-        try
-        {
-            return $"{checked(salaryBase * multiplier)}";
-        }
-        catch (OverflowException)
-        {
-            return "*** Much Too Big ***";
-        }
-    }
+    public double TareAdjustment { get { return _tareAdjus; } set { _tareAdjus = value; } }
 }
