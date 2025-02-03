@@ -1,38 +1,102 @@
 ﻿using System;
-using System.Globalization;
+using System.Collections.Generic;
 
-
-class WeighingMachine
+public class WeatherStation
 {
-    private double _weight;
-    private double _tareAdjus = 5.0;
+    private Reading reading;
+    private List<DateTime> recordDates = new List<DateTime>();
+    private List<decimal> temperatures = new List<decimal>();
 
-    public WeighingMachine(int precision)
+    public void AcceptReading(Reading reading)
     {
-        Precision = precision;
+        this.reading = reading;
+        recordDates.Add(DateTime.Now);
+        temperatures.Add(reading.Temperature);
     }
 
-    public int Precision { get; private set; }
-    public double Weight 
+    public void ClearAll()
     {
-        get { return _weight; }
-        set 
-        {
-            if (value >= 0)
-               _weight = value;
-            else
-                throw new ArgumentOutOfRangeException();
-        }
+        reading = new Reading();
+        recordDates.Clear();
+        temperatures.Clear();
     }
 
-    public string DisplayWeight 
-    {
-        get
-        {
-            var format = new NumberFormatInfo() { NumberDecimalDigits = Precision };
-            return $"{(_weight - _tareAdjus).ToString("f", format)} kg";
-        }
-    }
+    public decimal LatestTemperature => reading.Temperature;
 
-    public double TareAdjustment { get { return _tareAdjus; } set { _tareAdjus = value; } }
+
+    public decimal LatestPressure => reading.Pressure;
+
+
+    public decimal LatestRainfall => reading.Rainfall;
+
+
+    public bool HasHistory => (recordDates.Count > 1) ? true : false;
+
+
+    public Outlook ShortTermOutlook =>
+        reading.Equals(new Reading()) ? throw new ArgumentException() :
+        reading.Pressure < 10m && reading.Temperature < 30m ? Outlook.Cool :
+        reading.Temperature > 50 ? Outlook.Good :
+        Outlook.Warm;
+
+
+    public Outlook LongTermOutlook => reading.WindDirection switch
+    {
+        WindDirection.Southerly => Outlook.Good,
+        WindDirection.Easterly when reading.Temperature > 20 => Outlook.Good,
+        WindDirection.Northerly => Outlook.Cool,
+        WindDirection.Easterly when reading.Temperature <= 20 => Outlook.Warm,
+        WindDirection.Westerly => Outlook.Rainy,
+        _ => throw new ArgumentException()
+    };
+
+
+    public State RunSelfTest()
+    {
+        return (reading.Equals(new Reading()) ? State.Bad : State.Good);
+    }
+}
+
+/*** Please do not modify this struct ***/
+public struct Reading
+{
+    public decimal Temperature { get; }
+    public decimal Pressure { get; }
+    public decimal Rainfall { get; }
+    public WindDirection WindDirection { get; }
+
+    public Reading(decimal temperature, decimal pressure,
+        decimal rainfall, WindDirection windDirection)
+    {
+        Temperature = temperature;
+        Pressure = pressure;
+        Rainfall = rainfall;
+        WindDirection = windDirection;
+    }
+}
+
+/*** Please do not modify this enum ***/
+public enum State
+{
+    Good,
+    Bad
+}
+
+/*** Please do not modify this enum ***/
+public enum Outlook
+{
+    Cool,
+    Rainy,
+    Warm,
+    Good
+}
+
+/*** Please do not modify this enum ***/
+public enum WindDirection
+{
+    Unknown, // default
+    Northerly,
+    Easterly,
+    Southerly,
+    Westerly
 }
