@@ -1,44 +1,44 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 
-static class GameMaster
+public interface IRemoteControlCar
 {
-    public static string Describe(Character character) =>
-        $"You're a level {character.Level} {character.Class} with {character.HitPoints} hit points.";
+    public int DistanceTravelled { get; }
 
-
-    public static string Describe(Destination destination) =>
-        $"You've arrived at {destination.Name}, which has {destination.Inhabitants} inhabitants.";
-
-
-    public static string Describe(TravelMethod travelMethod) =>
-        (travelMethod == TravelMethod.Horseback) ? "You're traveling to your destination on horseback." : "You're traveling to your destination by walking.";
-
-
-    public static string Describe(Character character, Destination destination, TravelMethod travelMethod) =>
-        $"{Describe(character)} {Describe(travelMethod)} {Describe(destination)}";
-
-
-    public static string Describe(Character character, Destination destination) =>
-        $"{Describe(character)} {Describe(TravelMethod.Walking)} {Describe(destination)}";
-
+    public void Drive();
 }
 
-class Character
+public class ProductionRemoteControlCar : IRemoteControlCar, IComparable
 {
-    public string Class { get; set; }
-    public int Level { get; set; }
-    public int HitPoints { get; set; }
+    public int DistanceTravelled { get; private set; }
+    public int NumberOfVictories { get; set; }
+
+    public void Drive() =>
+        DistanceTravelled += 10;
+
+    public int CompareTo(object? obj)
+    {
+        ProductionRemoteControlCar otherCar = obj as ProductionRemoteControlCar;
+        return (otherCar != null) ? this.NumberOfVictories.CompareTo(otherCar.NumberOfVictories) : throw new ArgumentException();
+    }
 }
 
-class Destination
+public class ExperimentalRemoteControlCar : IRemoteControlCar
 {
-    public string Name { get; set; }
-    public int Inhabitants { get; set; }
+    public int DistanceTravelled { get; private set; }
+
+    public void Drive() =>
+        DistanceTravelled += 20;
 }
 
-enum TravelMethod
+public static class TestTrack
 {
-    Walking,
-    Horseback
+    public static void Race(IRemoteControlCar car) =>
+        car.Drive();
+
+
+    public static List<ProductionRemoteControlCar> GetRankedCars(ProductionRemoteControlCar prc1,
+        ProductionRemoteControlCar prc2) =>
+            (prc1.CompareTo(prc2) == 1) ? new List<ProductionRemoteControlCar> { prc2, prc1 } : new List<ProductionRemoteControlCar> { prc1, prc2 };
+
 }
