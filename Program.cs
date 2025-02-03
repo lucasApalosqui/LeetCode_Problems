@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Text;
+using System.Collections.Generic;
 
-public static class Identifier
+PhoneNumber.Analyze("212-555-1234");
+public static class PhoneNumber
 {
-    private static bool IsGreekLowercase(char c) => (c >= 'α' && c <= 'ω'); //Verifica se o char é uma letra grega minuscula
-    public static string Clean(string identifier)
+    public static (bool IsNewYork, bool IsFake, string LocalNumber) Analyze(string phoneNumber) 
     {
-        StringBuilder sb = new StringBuilder();
-        var isAfterDash = false; //verifica se o char aparece após um '-'
-        foreach (var c in identifier)
-        {
-            sb.Append(c switch
-            {
-                _ when IsGreekLowercase(c) => default, //se for uma letra grega minuscula, não adiciona no stringBuilder
-                _ when isAfterDash => char.ToUpperInvariant(c), //Converte o seguinte caractere para maiusculo
-                _ when char.IsWhiteSpace(c) => '_', //transforma o char em '_' caso seja um espaço em branco
-                _ when char.IsControl(c) => "CTRL", // Se for um char de comando substitui por CTRL
-                _ when char.IsLetter(c) => c, //Adiciona o char se o mesmo for uma letra
-                _ => default,
-            });
-            isAfterDash = c.Equals('-'); // seta a variavel como true se o char for '-'
-        }
-        return sb.ToString();
+        var phoneTest = phoneNumber.Split('-');
+        return ((phoneTest[0].Contains("212") ? true : false), (phoneTest[1].Contains("555") ? true : false), phoneTest[2]);
     }
+
+    public static bool IsFake((bool IsNewYork, bool IsFake, string LocalNumber) phoneNumberInfo)
+    {
+        return (phoneNumberInfo.IsFake == true) ? true : false;
+    }
+
+
 }
