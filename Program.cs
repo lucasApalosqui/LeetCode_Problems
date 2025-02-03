@@ -1,19 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 
-PhoneNumber.Analyze("212-555-1234");
-public static class PhoneNumber
+public static class CentralBank
 {
-    public static (bool IsNewYork, bool IsFake, string LocalNumber) Analyze(string phoneNumber) 
+    public static string DisplayDenomination(long @base, long multiplier)
     {
-        var phoneTest = phoneNumber.Split('-');
-        return ((phoneTest[0].Contains("212") ? true : false), (phoneTest[1].Contains("555") ? true : false), phoneTest[2]);
+        try
+        {
+            return $"{checked(@base * multiplier)}";
+        }
+        catch  
+        {
+            return ("*** Too Big ***");
+        }
     }
 
-    public static bool IsFake((bool IsNewYork, bool IsFake, string LocalNumber) phoneNumberInfo)
+    public static string DisplayGDP(float @base, float multiplier)
     {
-        return (phoneNumberInfo.IsFake == true) ? true : false;
+       return float.IsFinite(@base * multiplier) ? $"{@base * multiplier}" : "*** Too Big ***";
     }
 
-
+    public static string DisplayChiefEconomistSalary(decimal salaryBase, decimal multiplier)
+    {
+        try
+        {
+            return $"{checked(salaryBase * multiplier)}";
+        }
+        catch (OverflowException)
+        {
+            return "*** Much Too Big ***";
+        }
+    }
 }
