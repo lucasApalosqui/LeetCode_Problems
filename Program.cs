@@ -1,44 +1,69 @@
 ﻿using System;
 using System.Collections.Generic;
-
-public interface IRemoteControlCar
+public class FacialFeatures
 {
-    public int DistanceTravelled { get; }
+    public string EyeColor { get; }
+    public decimal PhiltrumWidth { get; }
 
-    public void Drive();
-}
-
-public class ProductionRemoteControlCar : IRemoteControlCar, IComparable
-{
-    public int DistanceTravelled { get; private set; }
-    public int NumberOfVictories { get; set; }
-
-    public void Drive() =>
-        DistanceTravelled += 10;
-
-    public int CompareTo(object? obj)
+    public FacialFeatures(string eyeColor, decimal philtrumWidth)
     {
-        ProductionRemoteControlCar otherCar = obj as ProductionRemoteControlCar;
-        return (otherCar != null) ? this.NumberOfVictories.CompareTo(otherCar.NumberOfVictories) : throw new ArgumentException();
+        EyeColor = eyeColor;
+        PhiltrumWidth = philtrumWidth;
     }
+
+    public override bool Equals(object? obj) => 
+        ReferenceEquals(this, obj) || Equals(obj as FacialFeatures); // Verifica se os objetos são iguais
+
+    public bool Equals(FacialFeatures otherF) => // sobrescreve o método equals para verificar se os parametros especificados são iguais
+        otherF != null &&
+        this.EyeColor == otherF.EyeColor &&
+        this.PhiltrumWidth == otherF.PhiltrumWidth;
+
+    public override int GetHashCode() => // combina o dois parametros e cria um HashCode de ambos unidos
+        HashCode.Combine(this.EyeColor, this.PhiltrumWidth);
 }
 
-public class ExperimentalRemoteControlCar : IRemoteControlCar
+public class Identity
 {
-    public int DistanceTravelled { get; private set; }
+    public string Email { get; }
+    public FacialFeatures FacialFeatures { get; }
 
-    public void Drive() =>
-        DistanceTravelled += 20;
+    public Identity(string email, FacialFeatures facialFeatures)
+    {
+        Email = email;
+        FacialFeatures = facialFeatures;
+    }
+
+    public override bool Equals(object? obj) =>
+        ReferenceEquals(this, obj) || Equals(obj as Identity);
+
+    public bool Equals(Identity otherI) =>
+        otherI != null &&
+        this.Email == otherI.Email &&
+        this.FacialFeatures.Equals(otherI.FacialFeatures);
+
+    public override int GetHashCode() =>
+        HashCode.Combine(this.Email, this.FacialFeatures);
 }
 
-public static class TestTrack
+public class Authenticator
 {
-    public static void Race(IRemoteControlCar car) =>
-        car.Drive();
+    private static readonly Identity _admin = new Identity("admin@exerc.ism", new FacialFeatures("green", 0.9m)); // Seta como padrão o Administrador
+    private HashSet<Identity> _registeredIdentities = new(); //Usamos HashSet ao invés de List pois retorna bool ao adicionar
+
+    public static bool AreSameFace(FacialFeatures faceA, FacialFeatures faceB) =>
+        faceA.Equals(faceB); // Utilizamos o Equals que sobreescrevemos
+
+    public bool IsAdmin(Identity identity) =>
+        identity.Equals(_admin);
 
 
-    public static List<ProductionRemoteControlCar> GetRankedCars(ProductionRemoteControlCar prc1,
-        ProductionRemoteControlCar prc2) =>
-            (prc1.CompareTo(prc2) == 1) ? new List<ProductionRemoteControlCar> { prc2, prc1 } : new List<ProductionRemoteControlCar> { prc1, prc2 };
+    public bool Register(Identity identity) =>
+        _registeredIdentities.Add(identity); // Adiciona dentro do HashSet
 
+    public bool IsRegistered(Identity identity) =>
+        _registeredIdentities.Contains(identity); // Verifica se existe o identity dentro do HashSet
+
+    public static bool AreSameObject(Identity identityA, Identity identityB) =>
+        ReferenceEquals(identityA, identityB);
 }
